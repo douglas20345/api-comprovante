@@ -7,41 +7,48 @@ app = Flask(__name__)
 
 @app.route('/comprovant', methods=['GET'])
 def comprovant():
-    nome = request.args.get('nome')  # Pega o parâmetro 'nome' da URL
+    nome = request.args.get('nome')
     if not nome:
         return {'error': 'Nome não fornecido'}, 400
 
-    # Carrega a imagem (deixe o arquivo "comprovante_template.png" na raiz do projeto)
-    image = Image.open("comprovante_template.png")
+    # Caminho correto dos arquivos
+    image_path = "api/comprovante_template.png"
+    font_path = "api/arialbd.ttf"
 
-    # Configuração para escrever o nome na imagem
+    # Carregar imagem
+    try:
+        image = Image.open(image_path)
+    except FileNotFoundError:
+        return {'error': 'Imagem não encontrada'}, 500
+
+    # Configurar desenho
     draw = ImageDraw.Draw(image)
 
-    # Carregar uma fonte personalizada para o nome
+    # Carregar fonte personalizada
     try:
-        font_nome = ImageFont.truetype("arialbd.ttf", 40)  # Arial negrito
+        font_nome = ImageFont.truetype(font_path, 40)
     except IOError:
         font_nome = ImageFont.load_default()
 
-    # Definir a posição do texto
+    # Adicionar texto na imagem
     text_position = (28, 185)
     draw.text(text_position, nome, font=font_nome, fill="black")
 
-    # Adiciona a data atual
+    # Adicionar data atual
     data_atual = datetime.now().strftime("%d/%m/%Y")
     data_position = (220, 280)
     draw.text(data_position, data_atual, font=font_nome, fill="black")
 
-    # Adiciona a data de vencimento
+    # Adicionar data de vencimento
     vencimento_position = (700, 280)
     draw.text(vencimento_position, data_atual, font=font_nome, fill="white")
 
-    # Salva a imagem modificada em um buffer de memória
+    # Salvar imagem em memória e retornar
     img_io = io.BytesIO()
     image.save(img_io, 'PNG')
     img_io.seek(0)
-
     return send_file(img_io, mimetype='image/png')
 
+# Expor a aplicação para Vercel
 def handler(event, context):
     return app(event, context)
