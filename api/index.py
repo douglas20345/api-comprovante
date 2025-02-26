@@ -52,3 +52,4 @@ def comprovant():
 # Expor a aplicação para Vercel
 def handler(event, context):
     return app(event, context)
+if isinstance(base, type) and issubclass(base, BaseHTTPRequestHandler):
