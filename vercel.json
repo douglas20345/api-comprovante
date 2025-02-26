@@ -1,0 +1,16 @@
+{
+    "version": 2,
+    "builds": [
+      {
+        "src": "api/comprovant.py",
+        "use": "@vercel/python"
+      }
+    ],
+    "routes": [
+      {
+        "src": "/comprovant",
+        "dest": "api/comprovant.py"
+      }
+    ]
+  }
+  
